@@ -156,7 +156,7 @@ class MLPPolicyPG(MLPPolicy):
                 ## ptu.from_numpy before using it in the loss
 
             target = ptu.from_numpy(normalize(q_values, np.mean(q_values), np.std(q_values)))
-            pred = self.run_baseline_prediction(observations)
+            pred = self.baseline(observations).squeeze()
             baseline_loss = self.baseline_loss(pred, target)
             self.baseline_optimizer.zero_grad()
             baseline_loss.backward()
@@ -179,6 +179,7 @@ class MLPPolicyPG(MLPPolicy):
             Output: np.ndarray of size [N]
 
         """
-        observations = ptu.from_numpy(observations)
+        if type(observations) is np.ndarray:
+            observations = ptu.from_numpy(observations)
         pred = self.baseline(observations)
         return ptu.to_numpy(pred.squeeze())
